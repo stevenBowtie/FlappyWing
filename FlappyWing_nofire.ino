@@ -8,14 +8,15 @@ byte currentIN=A2;
 byte up=2;
 byte flap=4;
 byte flapPin=6;
-byte current_limit=500;
+int current_limit=600;
 
 //State
-boolean dirUP;
+boolean initial_direction;
+boolean current_direction;
 unsigned long time_diff=0;
 unsigned long last=0;
 unsigned long duration=0;
-unsigned long time_limit=2800;
+unsigned long time_limit=4000;
 boolean bootup=1;
 
 void setup(){
@@ -30,17 +31,19 @@ void setup(){
 }
 
 void loop(){
-  if(millis()<10000){duration=500; digitalWrite(13,1);}
+  if(millis()<5000){duration=500; digitalWrite(13,1);}
   else if(bootup){duration=0; bootup=0;digitalWrite(13,0);}
   if(analogRead(upIN)<sensitivity && check_time(1)){
-    digitalWrite(up,dirUP);
-    digitalWrite(up+1,!dirUP);
+    current_direction=1;
+    digitalWrite(up,initial_direction);
+    digitalWrite(up+1,!initial_direction);
     check_current();
   }
  else if(analogRead(downIN)<sensitivity && check_time(0)){
-    digitalWrite(up,!dirUP);
-    digitalWrite(up+1,dirUP);
-    check_current();
+   current_direction=0;
+   digitalWrite(up,!initial_direction);
+   digitalWrite(up+1,initial_direction);
+   check_current();
   }
   else{
     digitalWrite(up,1);
@@ -57,9 +60,12 @@ void check_current(){
     if(analogRead(currentIN)>current_limit){
       digitalWrite(up,0);
       digitalWrite(up+1,0);
-      duration=0;
+      if(current_direction){duration=time_limit;}
+      else{duration=0;}
       Serial.println(analogRead(currentIN));
+      digitalWrite(13,1);
       delay(1000);
+      digitalWrite(13,0);
     }
   }
 }

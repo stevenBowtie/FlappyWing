@@ -16,7 +16,7 @@ boolean current_direction;
 unsigned long time_diff=0;
 unsigned long last=0;
 unsigned long duration=0;
-unsigned long time_limit=4000;
+unsigned long time_limit=4600;
 boolean bootup=1;
 
 void setup(){
